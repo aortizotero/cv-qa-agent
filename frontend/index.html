@@ -367,6 +367,9 @@
   const API_URL = "https://chat-api.ortizotero.com/api/chat";
 
   const langToggle = document.getElementById('langToggle');
+  const chatBody = document.getElementById('chatBody');
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
   let currentLang = 'en';
 
   function applyLang(lang) {
@@ -385,10 +388,6 @@
   });
 
   applyLang(currentLang);
-
-  const chatBody = document.getElementById('chatBody');
-  const chatInput = document.getElementById('chatInput');
-  const sendBtn = document.getElementById('sendBtn');
 
   let history = [];
   let isSending = false;
