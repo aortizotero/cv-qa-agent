@@ -7,6 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PL546WT');</script>
+<!-- End Google Tag Manager -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
 <style>
   :root {
     --ink: #12121C;
@@ -305,6 +313,10 @@
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PL546WT"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <div class="wrap">
 
@@ -354,6 +366,8 @@
 
 </div>
 
+<div id="turnstile-container" style="display:none"></div>
+
 <footer>
   ortizotero.com ·
   <a href="https://www.linkedin.com/in/alejandroortizotero/" target="_blank" rel="noopener">
@@ -365,6 +379,35 @@
 <script>
   // Backend desplegado en Coolify
   const API_URL = "https://chat-api.ortizotero.com/api/chat";
+
+  // --- Cloudflare Turnstile (anti-bot invisible) ---
+  const TURNSTILE_SITE_KEY = "0x4AAAAAAECLfYEtRfYjBkZa";
+  let turnstileWidgetId = null;
+  let turnstileResolve = null;
+
+  window.onTurnstileLoad = function () {
+    turnstileWidgetId = turnstile.render('#turnstile-container', {
+      sitekey: TURNSTILE_SITE_KEY,
+      size: 'invisible',
+      callback: (token) => {
+        if (turnstileResolve) { turnstileResolve(token); turnstileResolve = null; }
+      },
+      'error-callback': () => {
+        if (turnstileResolve) { turnstileResolve(null); turnstileResolve = null; }
+      }
+    });
+  };
+
+  function getTurnstileToken() {
+    return new Promise((resolve) => {
+      if (turnstileWidgetId === null) {
+        resolve(null); // Turnstile aún no cargó
+        return;
+      }
+      turnstileResolve = resolve;
+      turnstile.execute(turnstileWidgetId);
+    });
+  }
 
   const langToggle = document.getElementById('langToggle');
   const chatBody = document.getElementById('chatBody');
@@ -414,10 +457,20 @@
     sendBtn.disabled = true;
 
     try {
+      const turnstileToken = await getTurnstileToken();
+      if (turnstileWidgetId !== null) turnstile.reset(turnstileWidgetId);
+
+      if (!turnstileToken) {
+        addMessage('bot', 'Could not verify you are human. Please try again. / No pude verificar que eres humano. Intenta de nuevo.');
+        isSending = false;
+        sendBtn.disabled = false;
+        return;
+      }
+
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, history })
+        body: JSON.stringify({ message, history, turnstileToken })
       });
 
       if (!response.ok) {

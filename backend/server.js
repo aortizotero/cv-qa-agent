@@ -20,7 +20,32 @@ if (!process.env.ANTHROPIC_API_KEY) {
   process.exit(1);
 }
 
+if (!process.env.TURNSTILE_SECRET_KEY) {
+  console.error("Falta TURNSTILE_SECRET_KEY en el entorno.");
+  process.exit(1);
+}
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+async function verifyTurnstile(token, remoteIp) {
+  if (!token || typeof token !== "string") return false;
+  try {
+    const params = new URLSearchParams();
+    params.append("secret", process.env.TURNSTILE_SECRET_KEY);
+    params.append("response", token);
+    if (remoteIp) params.append("remoteip", remoteIp);
+
+    const verifyRes = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      { method: "POST", body: params }
+    );
+    const data = await verifyRes.json();
+    return data.success === true;
+  } catch (err) {
+    console.error("Error verificando Turnstile:", err);
+    return false;
+  }
+}
 
 // ---- Cargar contenido estático una sola vez al arrancar ----
 const systemPrompt = fs.readFileSync(
@@ -42,6 +67,7 @@ ${knowledgeBase}`;
 
 // ---- App ----
 const app = express();
+app.set("trust proxy", 1); // Detrás de Traefik/Coolify
 app.use(express.json({ limit: "20kb" }));
 app.use(
   cors({
@@ -77,7 +103,7 @@ function validateHistory(history) {
 
 app.post("/api/chat", chatLimiter, async (req, res) => {
   try {
-    const { message, history = [] } = req.body || {};
+    const { message, history = [], turnstileToken } = req.body || {};
 
     if (typeof message !== "string" || !message.trim()) {
       return res.status(400).json({ error: "Falta 'message' o está vacío." });
@@ -87,6 +113,11 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     }
     if (!validateHistory(history)) {
       return res.status(400).json({ error: "Historial inválido." });
+    }
+
+    const isHuman = await verifyTurnstile(turnstileToken, req.ip);
+    if (!isHuman) {
+      return res.status(403).json({ error: "Verificación anti-bot fallida. Intenta de nuevo." });
     }
 
     const messages = [
