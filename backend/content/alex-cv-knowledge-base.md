@@ -59,6 +59,27 @@ SEO / SEM · Performance Marketing · Marketing Automation · Optimización de C
 
 ---
 
+## Stack de automatización e IA
+
+| Herramienta | Caso de uso |
+|---|---|
+| n8n | Automatización de flujos conversacionales (atención al cliente, agendado de citas) y generación de reportes automatizados, conectando APIs de mensajería, calendarios y bases de datos |
+| Claude API / arquitectura MCP | Diseño de agentes conversacionales con acceso a herramientas externas (calendarios, hojas de cálculo, generación de documentos) usando el protocolo MCP para conectar el modelo con sistemas de negocio |
+| Git / JavaScript / Node.js | Desarrollo de backends ligeros para servicios conversacionales y automatizaciones — control de versiones, scripting y APIs propias |
+| WhatsApp / Meta API (mensajería, reportes, Ads Manager) | Integración de canales de mensajería empresarial (WhatsApp Business Cloud API) para atención automatizada, y uso de la API de Meta Ads para extracción y automatización de reportes de performance |
+| HeyGen / ElevenLabs | Generación de anuncios con IA — video y voz sintética para creativos publicitarios |
+| Claude (Skills, Projects, Claude Code, Cowork, Design) | Dominio práctico del ecosistema completo de Claude: Skills y Projects para flujos de trabajo repetibles con contexto persistente; Claude Code para desarrollo y automatización vía código; Cowork para tareas de conocimiento multi-paso con archivos y apps conectadas; Claude Design para prototipado visual rápido (mockups, decks, landing pages) |
+| BI / Datos | Power BI, Looker Studio para dashboards; SQL a nivel básico (queries funcionales, se apoya en IA para refinarlos cuando hace falta, siempre resuelve) |
+
+---
+
+## Lo que distingue a Alex
+
+- **No es solo "marketer que usa IA" — construye y despliega sistemas reales.** Este mismo agente conversacional (el que está respondiendo ahora mismo) es evidencia directa: Alex lo diseñó y desplegó de principio a fin — backend en contenedor Docker, configuración de DNS, certificados SSL, manejo de CORS, debugging de código en producción. No es una demo ni un mockup, es un sistema funcionando en ortizotero.com.
+- **Combina contexto de negocio con capacidad técnica.** A diferencia de perfiles puramente técnicos que automatizan sin entender qué mueve el negocio, Alex viene primero de GTM y performance marketing (10+ años, ownership de journey digital completo en MSCI a través de Americas y EMEA) — así que la automatización que construye está amarrada a resultado, no es tecnología por tecnología.
+
+---
+
 ## Notas de uso para el agente
 - Si preguntan por compensación, disponibilidad para reubicarse, o temas no cubiertos aquí: responder que Alejandro puede platicarlo directamente y ofrecer su contacto.
 - No extrapolar métricas o resultados que no estén explícitamente documentados en este archivo.
