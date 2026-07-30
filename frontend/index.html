@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alex Ortiz Otero — Marketing de performance + IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12121C;
+    --ink-2: #1B1B29;
+    --paper: #F6F4EF;
+    --paper-dim: #C9C7BE;
+    --orange: #FF5A36;
+    --violet: #8B6BFF;
+    --lime: #C6FF5C;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wrap {
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--lime);
+    margin-bottom: 2rem;
+  }
+
+  .status .left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lang-toggle {
+    background: transparent;
+    border: 1px solid #2A2A3B;
+    color: var(--paper-dim);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .lang-toggle:hover {
+    border-color: var(--violet);
+    color: var(--paper);
+  }
+
+  .lang-toggle:focus-visible {
+    outline: 2px solid var(--violet);
+    outline-offset: 2px;
+  }
+
+  .status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--lime);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .status .dot { animation: none; }
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.2rem, 6vw, 3.4rem);
+    line-height: 1.05;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  h1 span {
+    color: var(--orange);
+  }
+
+  .tagline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1rem, 2.4vw, 1.25rem);
+    color: var(--violet);
+    margin: 0 0 1.25rem;
+  }
+
+  .bio {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--paper-dim);
+    max-width: 60ch;
+    margin: 0 0 2.5rem;
+  }
+
+  .bio strong {
+    color: var(--paper);
+    font-weight: 500;
+  }
+
+  .console {
+    background: var(--ink-2);
+    border: 1px solid #2A2A3B;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 420px;
+  }
+
+  .console-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #2A2A3B;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--paper-dim);
+  }
+
+  .console-bar .traffic {
+    display: flex;
+    gap: 6px;
+    margin-right: 8px;
+  }
+
+  .console-bar .traffic span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .traffic span:nth-child(1) { background: #FF5A36; }
+  .traffic span:nth-child(2) { background: #C6FF5C; }
+  .traffic span:nth-child(3) { background: #8B6BFF; }
+
+  .console-body {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  .msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 8px;
+  }
+
+  .msg.bot {
+    background: #23233460;
+    color: var(--paper);
+    align-self: flex-start;
+    border: 1px solid #2A2A3B;
+  }
+
+  .msg.user {
+    background: var(--orange);
+    color: #24140C;
+    align-self: flex-end;
+    font-weight: 500;
+  }
+
+  .msg.bot .label, .msg.user .label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+    margin-bottom: 4px;
+  }
+
+  .console-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-top: 1px solid #2A2A3B;
+    font-family: var(--font-mono);
+  }
+
+  .console-input .prompt {
+    color: var(--lime);
+    font-size: 15px;
+  }
+
+  .console-input input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 14.5px;
+    caret-color: var(--orange);
+  }
+
+  .console-input input::placeholder {
+    color: #5A5A6E;
+  }
+
+  .console-input input:focus-visible {
+    outline: 2px solid var(--violet);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .console-input button {
+    background: var(--orange);
+    color: #24140C;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .console-input button:hover {
+    background: #FF6E4E;
+  }
+
+  .console-input button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .console-input button:focus-visible {
+    outline: 2px solid var(--violet);
+    outline-offset: 2px;
+  }
+
+  footer {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #5A5A6E;
+    padding: 1.5rem;
+  }
+
+  footer a {
+    color: var(--violet);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    color: var(--orange);
+  }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 2rem 1.25rem 1.5rem; }
+    .console { min-height: 360px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="status">
+    <span class="left">
+      <span class="dot" aria-hidden="true"></span>
+      <span data-es="disponible para conversar" data-en="available to chat">available to chat</span>
+    </span>
+    <button class="lang-toggle" id="langToggle" type="button">ES</button>
+  </div>
+
+  <h1>Alex Ortiz <span>Otero</span></h1>
+  <p class="tagline" data-es="Marketing de performance + automatización con IA" data-en="Performance marketing + AI automation">Performance marketing + AI automation</p>
+
+  <p class="bio">
+    <strong data-es="10+ años" data-en="10+ years">10+ years</strong>
+    <span data-es=" liderando SEO, performance marketing y automatización en MSCI, OXXO, Epsilon y más — hoy aplicando IA y agentes conversacionales para escalar operaciones de marketing. Pregúntale al chat de aquí abajo sobre su experiencia, resultados o cómo trabaja." data-en=" leading SEO, performance marketing and automation at MSCI, OXXO, Epsilon and more — now applying AI and conversational agents to scale marketing operations. Ask the chat below about his experience, results, or how he works."> leading SEO, performance marketing and automation at MSCI, OXXO, Epsilon and more — now applying AI and conversational agents to scale marketing operations. Ask the chat below about his experience, results, or how he works.</span>
+  </p>
+
+  <div class="console" role="region" aria-label="Chat about Alex's experience">
+    <div class="console-bar">
+      <span class="traffic" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span data-es="alex@ortizotero — pregúntame lo que quieras" data-en="alex@ortizotero — ask me anything">alex@ortizotero — ask me anything</span>
+    </div>
+
+    <div class="console-body" id="chatBody">
+      <div class="msg bot">
+        <span class="label">agent</span>
+        Hi, would you like to continue in English or Spanish? / Hola, ¿prefieres continuar en inglés o español?
+      </div>
+    </div>
+
+    <div class="console-input">
+      <span class="prompt" aria-hidden="true">&gt;</span>
+      <input
+        type="text"
+        id="chatInput"
+        placeholder="ask about his experience..."
+        data-ph-es="pregúntame sobre su experiencia..."
+        data-ph-en="ask about his experience..."
+        autocomplete="off"
+        aria-label="Type your question"
+      >
+      <button id="sendBtn" type="button" data-es="enviar" data-en="send">send</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  ortizotero.com ·
+  <a href="https://www.linkedin.com/in/alejandroortizotero/" target="_blank" rel="noopener">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.58c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.68H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+    linkedin
+  </a>
+</footer>
+
+<script>
+  // Configura aquí la URL de tu backend desplegado (Coolify/Droplet)
+  const API_URL = "http://localhost:3001/api/chat";
+
+  const langToggle = document.getElementById('langToggle');
+  let currentLang = 'en';
+
+  function applyLang(lang) {
+    document.querySelectorAll('[data-' + lang + ']').forEach(el => {
+      el.textContent = el.getAttribute('data-' + lang);
+    });
+    const ph = chatInput.getAttribute('data-ph-' + lang);
+    if (ph) chatInput.placeholder = ph;
+    langToggle.textContent = lang === 'es' ? 'EN' : 'ES';
+    document.documentElement.lang = lang;
+  }
+
+  langToggle.addEventListener('click', () => {
+    currentLang = currentLang === 'es' ? 'en' : 'es';
+    applyLang(currentLang);
+  });
+
+  applyLang(currentLang);
+
+  const chatBody = document.getElementById('chatBody');
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  let history = [];
+  let isSending = false;
+
+  function addMessage(role, text) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = role === 'user' ? 'tú' : 'agente';
+    div.appendChild(label);
+    div.appendChild(document.createTextNode(text));
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message || isSending) return;
+
+    addMessage('user', message);
+    chatInput.value = '';
+    isSending = true;
+    sendBtn.disabled = true;
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, history })
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'Error del servidor');
+      }
+
+      const data = await response.json();
+      addMessage('bot', data.reply);
+
+      history.push({ role: 'user', content: message });
+      history.push({ role: 'assistant', content: data.reply });
+
+      if (history.length > 20) {
+        history = history.slice(-20);
+      }
+    } catch (err) {
+      addMessage('bot', 'No pude conectar con el servidor. Intenta de nuevo en un momento.');
+      console.error(err);
+    } finally {
+      isSending = false;
+      sendBtn.disabled = false;
+      chatInput.focus();
+    }
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+</script>
+
+</body>
+</html>
