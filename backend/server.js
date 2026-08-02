@@ -6,6 +6,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { MAX_MESSAGE_LENGTH, validateHistory } from "./validation.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -84,22 +85,6 @@ const chatLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "Límite de mensajes alcanzado. Intenta de nuevo más tarde." },
 });
-
-// Límite de historial que aceptamos del cliente (evita abuso de payload)
-const MAX_HISTORY_MESSAGES = 20;
-const MAX_MESSAGE_LENGTH = 2000;
-
-function validateHistory(history) {
-  if (!Array.isArray(history)) return false;
-  if (history.length > MAX_HISTORY_MESSAGES) return false;
-  return history.every(
-    (m) =>
-      m &&
-      (m.role === "user" || m.role === "assistant") &&
-      typeof m.content === "string" &&
-      m.content.length <= MAX_MESSAGE_LENGTH
-  );
-}
 
 app.post("/api/chat", chatLimiter, async (req, res) => {
   try {
