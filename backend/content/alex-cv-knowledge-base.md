@@ -13,6 +13,8 @@ SEO / SEM · Performance Marketing · Marketing Automation · Optimización de C
 ## Ubicación y contacto
 - Monterrey, Nuevo León, México
 - Portfolio: ortizotero.com
+- Contacto: LinkedIn — [www.linkedin.com/in/alejandroortizotero](https://www.linkedin.com/in/alejandroortizotero) (canal preferido para contactar a Alex directamente)
+- GitHub: [github.com/aortizotero](https://github.com/aortizotero) — código y proyectos públicos, incluyendo este mismo agente
 
 ---
 

@@ -241,6 +241,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     margin-bottom: 4px;
   }
 
+  .msg.bot a {
+    color: var(--violet);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .msg.bot a:hover {
+    color: var(--orange);
+  }
+
   .console-input {
     display: flex;
     align-items: center;
@@ -500,6 +510,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
   }
 
+  // Renders "[text](https://url)" as a real link; everything else stays plain text.
+  // No innerHTML/markdown lib on purpose — bot replies are model output, keep the DOM construction explicit.
+  function appendFormattedText(container, text) {
+    const linkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    let lastIndex = 0;
+    let match;
+    while ((match = linkPattern.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        container.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+      const a = document.createElement('a');
+      a.href = match[2];
+      a.textContent = match[1];
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      container.appendChild(a);
+      lastIndex = linkPattern.lastIndex;
+    }
+    if (lastIndex < text.length) {
+      container.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+  }
+
   function addMessage(role, text) {
     const div = document.createElement('div');
     div.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
@@ -507,7 +540,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     label.className = 'label';
     label.textContent = role === 'user' ? 'tú' : 'agente';
     div.appendChild(label);
-    div.appendChild(document.createTextNode(text));
+    if (role === 'user') {
+      div.appendChild(document.createTextNode(text));
+    } else {
+      appendFormattedText(div, text);
+    }
     chatBody.appendChild(div);
     chatBody.scrollTop = chatBody.scrollHeight;
   }
