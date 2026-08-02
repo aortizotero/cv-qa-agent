@@ -159,6 +159,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .console-bar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
     padding: 12px 16px;
     border-bottom: 1px solid #2A2A3B;
@@ -167,10 +168,25 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     color: var(--paper-dim);
   }
 
+  .console-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
   .console-bar .traffic {
     display: flex;
     gap: 6px;
     margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .stack-note {
+    color: #5A5A6E;
+    font-size: 11px;
+    white-space: nowrap;
+    cursor: default;
   }
 
   .console-bar .traffic span {
@@ -309,6 +325,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   @media (max-width: 560px) {
     .wrap { padding: 2rem 1.25rem 1.5rem; }
     .console { min-height: 360px; }
+    .stack-note { display: none; }
   }
 </style>
 </head>
@@ -338,8 +355,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="console" role="region" aria-label="Chat about Alex's experience">
     <div class="console-bar">
-      <span class="traffic" aria-hidden="true"><span></span><span></span><span></span></span>
-      <span data-es="alex@ortizotero — pregúntame lo que quieras" data-en="alex@ortizotero — ask me anything">alex@ortizotero — ask me anything</span>
+      <span class="console-bar-left">
+        <span class="traffic" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span data-es="alex@ortizotero — pregúntame lo que quieras" data-en="alex@ortizotero — ask me anything">alex@ortizotero — ask me anything</span>
+      </span>
+      <span
+        class="stack-note"
+        title="Node/Express backend, containerized with Docker, deployed on Coolify behind its own DNS, Cloudflare Turnstile anti-bot + rate limiting"
+        data-es="Docker · Coolify · Turnstile · auto-hosteado"
+        data-en="Docker · Coolify · Turnstile · self-hosted"
+      >Docker · Coolify · Turnstile · self-hosted</span>
     </div>
 
     <div class="console-body" id="chatBody">
@@ -434,6 +459,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   let history = [];
   let isSending = false;
+  let conversationStarted = false;
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function postChat(payload) {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      const err = new Error(body.error || 'Server error');
+      err.status = response.status;
+      throw err;
+    }
+    return response.json();
+  }
+
+  function isRetryable(err) {
+    // No status = fetch itself failed (network/DNS/offline). 5xx = transient server error.
+    return typeof err.status === 'undefined' || err.status >= 500;
+  }
+
+  function errorMessageFor(err) {
+    switch (err.status) {
+      case 429:
+        return "You've reached the message limit for now — try again later. / Alcanzaste el límite de mensajes por ahora, intenta más tarde.";
+      case 403:
+        return 'Verification failed. Please try again. / La verificación falló. Intenta de nuevo.';
+      case 400:
+        return "Something's off with that message — try rephrasing it. / Algo no cuadra con ese mensaje, intenta reformularlo.";
+      default:
+        return typeof err.status === 'undefined'
+          ? 'Could not reach the server. Check your connection and try again. / No pude conectar con el servidor. Revisa tu conexión e intenta de nuevo.'
+          : 'The server hit a snag. Please try again in a moment. / El servidor tuvo un problema. Intenta de nuevo en un momento.';
+    }
+  }
 
   function addMessage(role, text) {
     const div = document.createElement('div');
@@ -456,29 +521,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     isSending = true;
     sendBtn.disabled = true;
 
+    if (!conversationStarted) {
+      conversationStarted = true;
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'conversation_started', chat_language: currentLang });
+    }
+
     try {
       const turnstileToken = await getTurnstileToken();
       if (turnstileWidgetId !== null) turnstile.reset(turnstileWidgetId);
 
       if (!turnstileToken) {
         addMessage('bot', 'Could not verify you are human. Please try again. / No pude verificar que eres humano. Intenta de nuevo.');
-        isSending = false;
-        sendBtn.disabled = false;
         return;
       }
 
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, history, turnstileToken })
-      });
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || 'Error del servidor');
+      const payload = { message, history, turnstileToken };
+      let data;
+      try {
+        data = await postChat(payload);
+      } catch (err) {
+        if (isRetryable(err)) {
+          await sleep(1200);
+          data = await postChat(payload);
+        } else {
+          throw err;
+        }
       }
 
-      const data = await response.json();
       addMessage('bot', data.reply);
 
       history.push({ role: 'user', content: message });
@@ -488,7 +558,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         history = history.slice(-20);
       }
     } catch (err) {
-      addMessage('bot', 'No pude conectar con el servidor. Intenta de nuevo en un momento.');
+      addMessage('bot', errorMessageFor(err));
       console.error(err);
     } finally {
       isSending = false;
