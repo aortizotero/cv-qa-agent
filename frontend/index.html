@@ -23,7 +23,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     --paper-dim: #C9C7BE;
     --orange: #FF5A36;
     --violet: #8B6BFF;
+    --violet-light: #A08CFF;
     --lime: #C6FF5C;
+    --border: #6A6A88;
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-mono: 'IBM Plex Mono', monospace;
@@ -75,11 +77,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   .lang-toggle {
     background: transparent;
-    border: 1px solid #2A2A3B;
+    border: 1px solid var(--border);
     color: var(--paper-dim);
     font-family: var(--font-mono);
     font-size: 12px;
-    padding: 5px 10px;
+    padding: 8px 12px;
+    min-height: 32px;
+    min-width: 32px;
     border-radius: 6px;
     cursor: pointer;
   }
@@ -147,7 +151,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   .console {
     background: var(--ink-2);
-    border: 1px solid #2A2A3B;
+    border: 1px solid var(--border);
     border-radius: 10px;
     overflow: hidden;
     display: flex;
@@ -162,7 +166,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     justify-content: space-between;
     gap: 8px;
     padding: 12px 16px;
-    border-bottom: 1px solid #2A2A3B;
+    border-bottom: 1px solid var(--border);
     font-family: var(--font-mono);
     font-size: 12px;
     color: var(--paper-dim);
@@ -183,7 +187,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   .stack-note {
-    color: #5A5A6E;
+    color: var(--paper-dim);
     font-size: 11px;
     white-space: nowrap;
     cursor: default;
@@ -221,7 +225,32 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     background: #23233460;
     color: var(--paper);
     align-self: flex-start;
-    border: 1px solid #2A2A3B;
+    border: 1px solid var(--border);
+  }
+
+  .msg.bot.typing .dots {
+    display: inline-flex;
+    gap: 4px;
+  }
+
+  .msg.bot.typing .dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--paper-dim);
+    animation: typingPulse 1.2s ease-in-out infinite;
+  }
+
+  .msg.bot.typing .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .msg.bot.typing .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typingPulse {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-2px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .msg.bot.typing .dots span { animation: none; opacity: 0.7; }
   }
 
   .msg.user {
@@ -242,7 +271,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   .msg.bot a {
-    color: var(--violet);
+    color: var(--violet-light);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
@@ -256,7 +285,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     align-items: center;
     gap: 10px;
     padding: 14px 16px;
-    border-top: 1px solid #2A2A3B;
+    border-top: 1px solid var(--border);
     font-family: var(--font-mono);
   }
 
@@ -277,7 +306,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   .console-input input::placeholder {
-    color: #5A5A6E;
+    color: var(--paper-dim);
   }
 
   .console-input input:focus-visible {
@@ -291,7 +320,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     color: #24140C;
     border: none;
     border-radius: 6px;
-    padding: 8px 16px;
+    padding: 10px 18px;
+    min-height: 36px;
     font-family: var(--font-mono);
     font-size: 13px;
     font-weight: 500;
@@ -312,11 +342,41 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     outline-offset: 2px;
   }
 
+  .starter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 20px 16px;
+  }
+
+  .starter-chip {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--paper-dim);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 7px 12px;
+    min-height: 32px;
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .starter-chip:hover {
+    border-color: var(--violet);
+    color: var(--paper);
+  }
+
+  .starter-chip:focus-visible {
+    outline: 2px solid var(--violet);
+    outline-offset: 2px;
+  }
+
   footer {
     text-align: center;
     font-family: var(--font-mono);
     font-size: 12px;
-    color: #5A5A6E;
+    color: var(--paper-dim);
     padding: 1.5rem;
   }
 
@@ -377,11 +437,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       >Docker · Coolify · Turnstile · self-hosted</span>
     </div>
 
-    <div class="console-body" id="chatBody">
+    <div class="console-body" id="chatBody" role="log" aria-live="polite" aria-relevant="additions">
       <div class="msg bot">
         <span class="label">agent</span>
         Hi, would you like to continue in English or Spanish? / Hola, ¿prefieres continuar en inglés o español?
       </div>
+    </div>
+
+    <div class="starter-chips" id="starterChips">
+      <button
+        class="starter-chip"
+        type="button"
+        data-es="¿Qué hizo Alex en OXXO?"
+        data-en="What did Alex do at OXXO?"
+      >What did Alex do at OXXO?</button>
+      <button
+        class="starter-chip"
+        type="button"
+        data-es="¿Cómo está construido este agente?"
+        data-en="How is this agent built?"
+      >How is this agent built?</button>
+      <button
+        class="starter-chip"
+        type="button"
+        data-es="¿Cuál es el stack técnico de Alex?"
+        data-en="What's Alex's tech stack?"
+      >What's Alex's tech stack?</button>
     </div>
 
     <div class="console-input">
@@ -401,7 +482,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 </div>
 
-<div id="turnstile-container" style="display:none"></div>
+<div id="turnstile-container"></div>
 
 <footer>
   ortizotero.com ·
@@ -423,7 +504,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   window.onTurnstileLoad = function () {
     turnstileWidgetId = turnstile.render('#turnstile-container', {
       sitekey: TURNSTILE_SITE_KEY,
-      size: 'invisible',
+      size: 'normal',
+      execution: 'execute',
+      appearance: 'interaction-only',
       callback: (token) => {
         if (turnstileResolve) { turnstileResolve(token); turnstileResolve = null; }
       },
@@ -433,12 +516,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
   };
 
-  function getTurnstileToken() {
+  // Espera a que el widget invisible termine de inicializar (carga async) antes
+  // de rendirse — si no, usuarios que envían su primer mensaje muy rápido caen
+  // en un falso "no eres humano" solo por timing, no por ser bots de verdad.
+  function waitForTurnstileWidget(timeoutMs = 4000) {
     return new Promise((resolve) => {
-      if (turnstileWidgetId === null) {
-        resolve(null); // Turnstile aún no cargó
-        return;
-      }
+      if (turnstileWidgetId !== null) { resolve(true); return; }
+      const start = Date.now();
+      const interval = setInterval(() => {
+        if (turnstileWidgetId !== null) {
+          clearInterval(interval);
+          resolve(true);
+        } else if (Date.now() - start > timeoutMs) {
+          clearInterval(interval);
+          resolve(false);
+        }
+      }, 100);
+    });
+  }
+
+  async function getTurnstileToken() {
+    const loaded = await waitForTurnstileWidget();
+    if (!loaded) return null; // Nunca cargó: bloqueado por extensión, red lenta, etc.
+    return new Promise((resolve) => {
       turnstileResolve = resolve;
       turnstile.execute(turnstileWidgetId);
     });
@@ -448,6 +548,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   const chatBody = document.getElementById('chatBody');
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('sendBtn');
+  const starterChips = document.getElementById('starterChips');
   let currentLang = 'en';
 
   function applyLang(lang) {
@@ -457,6 +558,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const ph = chatInput.getAttribute('data-ph-' + lang);
     if (ph) chatInput.placeholder = ph;
     langToggle.textContent = lang === 'es' ? 'EN' : 'ES';
+    langToggle.setAttribute('aria-label', lang === 'es' ? 'Switch to English' : 'Cambiar a español');
     document.documentElement.lang = lang;
   }
 
@@ -549,6 +651,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     chatBody.scrollTop = chatBody.scrollHeight;
   }
 
+  function showTyping() {
+    const div = document.createElement('div');
+    div.className = 'msg bot typing';
+    div.id = 'typingIndicator';
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = 'agente';
+    div.appendChild(label);
+    const dots = document.createElement('span');
+    dots.className = 'dots';
+    dots.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i < 3; i++) {
+      dots.appendChild(document.createElement('span'));
+    }
+    div.appendChild(dots);
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function hideTyping() {
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
+  }
+
   async function sendMessage() {
     const message = chatInput.value.trim();
     if (!message || isSending) return;
@@ -560,6 +686,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     if (!conversationStarted) {
       conversationStarted = true;
+      starterChips.hidden = true;
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({ event: 'conversation_started', chat_language: currentLang });
     }
@@ -569,11 +696,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (turnstileWidgetId !== null) turnstile.reset(turnstileWidgetId);
 
       if (!turnstileToken) {
-        addMessage('bot', 'Could not verify you are human. Please try again. / No pude verificar que eres humano. Intenta de nuevo.');
+        addMessage('bot', "Security check didn't load — this can happen with ad blockers or privacy extensions. Disable them for this site and try again. / La verificación de seguridad no cargó — puede pasar por bloqueadores de anuncios o extensiones de privacidad. Desactívalas para este sitio e intenta de nuevo.");
         return;
       }
 
+      // El bubble de saludo estático ya preguntó el idioma — este exchange
+      // sintético evita que el modelo lo vuelva a preguntar en su primer turno.
+      if (history.length === 0) {
+        history = [
+          { role: 'assistant', content: 'Hi, would you like to continue in English or Spanish? / Hola, ¿prefieres continuar en inglés o español?' },
+          { role: 'user', content: currentLang === 'es' ? 'Español, por favor.' : 'English, please.' }
+        ];
+      }
+
       const payload = { message, history, turnstileToken };
+      showTyping();
       let data;
       try {
         data = await postChat(payload);
@@ -598,6 +735,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       addMessage('bot', errorMessageFor(err));
       console.error(err);
     } finally {
+      hideTyping();
       isSending = false;
       sendBtn.disabled = false;
       chatInput.focus();
@@ -607,6 +745,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   sendBtn.addEventListener('click', sendMessage);
   chatInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendMessage();
+  });
+
+  starterChips.querySelectorAll('.starter-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      chatInput.value = chip.textContent;
+      sendMessage();
+    });
   });
 </script>
 
