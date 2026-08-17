@@ -717,7 +717,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (err) {
         if (isRetryable(err)) {
           await sleep(1200);
-          data = await postChat(payload);
+          // Turnstile tokens are single-use — if the first attempt already
+          // consumed this one server-side before failing, reusing it here
+          // would fail verification instead of actually retrying.
+          const retryToken = await getTurnstileToken();
+          if (turnstileWidgetId !== null) turnstile.reset(turnstileWidgetId);
+          if (!retryToken) throw err;
+          data = await postChat({ ...payload, turnstileToken: retryToken });
         } else {
           throw err;
         }

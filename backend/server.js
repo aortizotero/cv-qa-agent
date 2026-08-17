@@ -110,19 +110,28 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       { role: "user", content: message },
     ];
 
-    const response = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      system: FULL_SYSTEM_PROMPT,
-      messages,
-    });
+    let response;
+    try {
+      response = await anthropic.messages.create({
+        model: MODEL,
+        max_tokens: MAX_TOKENS,
+        system: FULL_SYSTEM_PROMPT,
+        messages,
+      });
+    } catch (err) {
+      console.error(
+        `Error de Anthropic API en /api/chat (status ${err.status ?? "?"}):`,
+        err.message
+      );
+      return res.status(502).json({ error: "El agente no está disponible. Intenta de nuevo." });
+    }
 
     const textBlock = response.content.find((b) => b.type === "text");
     const reply = textBlock ? textBlock.text : "";
 
     return res.json({ reply });
   } catch (err) {
-    console.error("Error en /api/chat:", err);
+    console.error("Error inesperado en /api/chat:", err);
     return res.status(500).json({ error: "Error interno. Intenta de nuevo." });
   }
 });
